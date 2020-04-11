@@ -19,7 +19,55 @@ const Hook1 = () => {
 
 # 1.1 useInput
 
+```js
+const useInput = (initialState) => {
+  const [value, setValue] = useState(initialState);
+  const onChange = (e) => {
+    console.log(e.target.value);
+    setValue(e.target.value);
+  };
+  return { value, onChange };
+};
+const Hook2 = () => {
+  const name = useInput("Mr.");
+  return (
+    <>
+      <div>HI</div>
+      <input placeholder="" {...name}></input>
+    </>
+  );
+};
+```
+
 # 1.2 useInput part Two
+
+```js
+const useInputVaild = (initialState, vaildator) => {
+  const [value, setValue] = useState(initialState);
+  const onChange = (e) => {
+    let willupdate = true;
+    console.log(e.target.value);
+    if (typeof vaildator === "function") {
+      willupdate = vaildator(e.target.value);
+    }
+    if (willupdate) {
+      setValue(e.target.value);
+    }
+  };
+  return { value, onChange };
+};
+
+const Hook3 = () => {
+  const name = useInputVaild("Mr.", (v) => v.length <= 10);
+  return (
+    <>
+      <div>
+        <input placeholder="" {...name}></input>
+      </div>
+    </>
+  );
+};
+```
 
 # 1.3 useTabs
 
