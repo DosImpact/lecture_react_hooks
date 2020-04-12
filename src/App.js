@@ -19,6 +19,8 @@ function App() {
           <Hook6 />
           <Hook7 />
           <Hook8 />
+          <Hook9 />
+          <Hook10 />
         </Section>
       </header>
     </div>
@@ -195,5 +197,61 @@ const Hook8 = () => {
     <div>
       <h2 ref={title}>TITLE</h2>
     </div>
+  );
+};
+
+//특정함수를 실행하기 전에, 확인 메시지를 던지기
+const useConfirm = (message, onConfirm, onCancel) => {
+  if (!onConfirm || typeof onConfirm !== "function") {
+    return;
+  }
+  if (onCancel && typeof onCancel !== "function") {
+    return;
+  }
+  const confirmAction = () => {
+    if (window.confirm(message)) {
+      onConfirm();
+    } else {
+      onCancel();
+    }
+  };
+  return confirmAction;
+};
+
+const Hook9 = () => {
+  const deleteWorldConfirm = () => console.log("DELETE WORLD Suc");
+  const deleteWorldDelete = () => console.log("DELETE WORLD Fail");
+  const confirmDelete = useConfirm(
+    "Sure? ",
+    deleteWorldConfirm,
+    deleteWorldDelete
+  );
+
+  return (
+    <div>
+      <button onClick={confirmDelete}>DELETE</button>
+    </div>
+  );
+};
+
+const usePreventLeave = () => {
+  const listener = (e) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+  const enablePrevent = () => window.addEventListener("beforeunload", listener);
+  const disablePrevent = () =>
+    window.removeEventListener("beforeunload", listener);
+  return { enablePrevent, disablePrevent };
+};
+const Hook10 = () => {
+  const { enablePrevent, disablePrevent } = usePreventLeave();
+  return (
+    <>
+      <div>
+        <button onClick={enablePrevent}>Protect</button>
+        <button onClick={disablePrevent}>unProtect</button>
+      </div>
+    </>
   );
 };
