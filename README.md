@@ -71,7 +71,49 @@ const Hook3 = () => {
 
 # 1.3 useTabs
 
+```js
+const AJAXData = [
+  {
+    title: "Section-1",
+    content: "This is Section - 1 Content",
+  },
+  {
+    title: "Section-2",
+    content: "This is Section - 2 Content",
+  },
+  {
+    title: "Section-3",
+    content: "This is Section - 3 Content",
+  },
+];
+//입력 : 초기 탭인덱스/배열 데이터 : 출력 현재 콘텐츠 및 인덱스 변경함수
+const useTabs = (initIdx, arrayData) => {
+  const [idx, setIdx] = useState(initIdx);
+  if (!Array.isArray(arrayData)) {
+    return;
+  }
+
+  return { data: arrayData[idx], setIdx };
+};
+
+const Hook4 = () => {
+  const sectionTab = useTabs(0, AJAXData);
+  return (
+    <>
+      {AJAXData.map((e, i) => (
+        <button onClick={() => sectionTab.setIdx(i)}>{e.title}</button>
+      ))}
+      <div>{sectionTab.data.content}</div>
+    </>
+  );
+};
+```
+
 # 2 useEffect
+
+- useEffect : 무조건 실행되는 사이드 이팩트 | 한번만 실행되는 사이드 이펙트 | 특정 변수가 바뀌면 실행되는 이펙트
+- 코드는 위에서 아래로 실행된다. | useEffect가 추적하는 변수가 useEffect 코드아래에 있다면 무용지물
+- 랜더링 큐에 한번에 모았다가 실행된다.3
 
 # 2.0 Introduction to useEffect
 
