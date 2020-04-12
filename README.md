@@ -115,9 +115,39 @@ const Hook4 = () => {
 - 코드는 위에서 아래로 실행된다. | useEffect가 추적하는 변수가 useEffect 코드아래에 있다면 무용지물
 - 랜더링 큐에 한번에 모았다가 실행된다.3
 
-# 2.0 Introduction to useEffect
+```js
+useEffect(() => {
+  console.log("cnt Changed");
+});
+
+useEffect(() => {
+  console.log("cnt Changed");
+}, []);
+
+useEffect(() => {
+  console.log("cnt Changed");
+}, [cnt]);
+```
 
 # 2.1 useTitle
+
+```js
+//사이드 이펙트로 문서의 title를 변경한다.
+const useTitle = (initalTitle) => {
+  const [title, setTitle] = useState(initalTitle);
+  useEffect(() => {
+    const htmlTitle = document.querySelector("title");
+    htmlTitle.innerText = title;
+  }, [title]);
+  return setTitle;
+};
+
+const Hook6 = () => {
+  const titleUpdator = useTitle("DOSIMPACT");
+  setTimeout(() => titleUpdator("BOOM!!"), 3000);
+  return <></>;
+};
+```
 
 # 2.2 useClick
 

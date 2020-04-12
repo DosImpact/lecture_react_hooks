@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -13,6 +13,10 @@ function App() {
           <Hook2 />
           <Hook3 />
           <Hook4 />
+        </Section>
+        <Section title={"USE EFFECT"}>
+          <Hook5 />
+          <Hook6 />
         </Section>
       </header>
     </div>
@@ -116,9 +120,43 @@ const Hook4 = () => {
   return (
     <>
       {AJAXData.map((e, i) => (
-        <button onClick={() => sectionTab.setIdx(i)}>{e.title}</button>
+        <button key={i} onClick={() => sectionTab.setIdx(i)}>
+          {e.title}
+        </button>
       ))}
       <div>{sectionTab.data.content}</div>
     </>
   );
+};
+
+const Hook5 = () => {
+  const [cnt, setCnt] = useState(0);
+  const plus = () => setCnt(cnt + 1);
+  const minus = () => setCnt(cnt - 1);
+  useEffect(() => {
+    console.log("cnt Changed");
+  }, [cnt]);
+  return (
+    <>
+      <div>{cnt}</div>
+      <button onClick={() => plus()}>+</button>
+      <button onClick={() => minus()}>-</button>
+    </>
+  );
+};
+
+//사이드 이펙트로 문서의 title를 변경한다.
+const useTitle = (initalTitle) => {
+  const [title, setTitle] = useState(initalTitle);
+  useEffect(() => {
+    const htmlTitle = document.querySelector("title");
+    htmlTitle.innerText = title;
+  }, [title]);
+  return setTitle;
+};
+
+const Hook6 = () => {
+  const titleUpdator = useTitle("DOSIMPACT");
+  setTimeout(() => titleUpdator("BOOM!!"), 3000);
+  return <></>;
 };
