@@ -21,6 +21,7 @@ function App() {
           <Hook8 />
           <Hook9 />
           <Hook10 />
+          <Hook11 />
         </Section>
       </header>
     </div>
@@ -233,7 +234,7 @@ const Hook9 = () => {
     </div>
   );
 };
-
+//========================================================================================
 const usePreventLeave = () => {
   const listener = (e) => {
     e.preventDefault();
@@ -244,6 +245,7 @@ const usePreventLeave = () => {
     window.removeEventListener("beforeunload", listener);
   return { enablePrevent, disablePrevent };
 };
+
 const Hook10 = () => {
   const { enablePrevent, disablePrevent } = usePreventLeave();
   return (
@@ -254,4 +256,23 @@ const Hook10 = () => {
       </div>
     </>
   );
+};
+const useBeforeLeave = (onBefore) => {
+  // if (typeof onBefore !== "function") {
+  //   return;
+  // }
+
+  useEffect(() => {
+    const handle = () => {
+      onBefore();
+    };
+    document.addEventListener("mouseleave", handle);
+    return () => document.removeEventListener("mouseleave", handle);
+  }, [onBefore]);
+};
+
+const Hook11 = () => {
+  const beggingYou = () => console.log("please dont leave me..");
+  useBeforeLeave(beggingYou);
+  return <div>BEGGING</div>;
 };

@@ -267,6 +267,28 @@ const Hook10 = () => {
 };
 ```
 
+```js
+const useBeforeLeave = (onBefore) => {
+  // if (typeof onBefore !== "function") {
+  //   return;
+  // }
+
+  useEffect(() => {
+    const handle = () => {
+      onBefore();
+    };
+    document.addEventListener("mouseleave", handle);
+    return () => document.removeEventListener("mouseleave", handle);
+  }, [onBefore]);
+};
+
+const Hook11 = () => {
+  const beggingYou = () => console.log("please dont leave me..");
+  useBeforeLeave(beggingYou);
+  return <div>BEGGING</div>;
+};
+```
+
 # 2.5 useFadeIn & useNetwork
 
 # 2.6 useScroll & useFullscreen
