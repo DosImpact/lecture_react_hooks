@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -17,6 +17,8 @@ function App() {
         <Section title={"USE EFFECT"}>
           <Hook5 />
           <Hook6 />
+          <Hook7 />
+          <Hook8 />
         </Section>
       </header>
     </div>
@@ -159,4 +161,39 @@ const Hook6 = () => {
   const titleUpdator = useTitle("DOSIMPACT");
   setTimeout(() => titleUpdator("BOOM!!"), 3000);
   return <></>;
+};
+
+const Hook7 = () => {
+  const nameInputRef = useRef();
+  setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 1000);
+  return (
+    <div>
+      <input ref={nameInputRef} placeholder="name"></input>
+    </div>
+  );
+};
+
+//특정 HTML 에 > 클릭을 트리거로 > 특정 함수 실행
+const useClick = (onClick) => {
+  const element = useRef();
+  useEffect(() => {
+    const HTMLHandler = element.current;
+    if (HTMLHandler) {
+      HTMLHandler.addEventListener("click", onClick);
+    }
+    return () => {
+      HTMLHandler.removeEventListener("click", onClick);
+    };
+  }, [onClick]);
+  return element;
+};
+
+const Hook8 = () => {
+  const sayHello = () => console.log("helllo");
+  const title = useClick(sayHello);
+  return (
+    <div>
+      <h2 ref={title}>TITLE</h2>
+    </div>
+  );
 };

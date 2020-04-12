@@ -127,6 +127,13 @@ useEffect(() => {
 useEffect(() => {
   console.log("cnt Changed");
 }, [cnt]);
+
+useEffect(() => {
+  D.addEventLisenter("click", e);
+  return () => {
+    D.removeEventLisenter("click", e);
+  };
+}, [D]);
 ```
 
 # 2.1 useTitle
@@ -151,7 +158,48 @@ const Hook6 = () => {
 
 # 2.2 useClick
 
+- useRef 는 getElementById해서 가져온 태그핸들러와 비슷하다.
+
+```js
+const Hook7 = () => {
+  const nameInputRef = useRef();
+  setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 1000);
+  return (
+    <div>
+      <input ref={nameInputRef} placeholder="name"></input>
+    </div>
+  );
+};
+```
+
 # 2.3 useConfirm & usePreventLeave
+
+```js
+//특정 HTML 에 > 클릭을 트리거로 > 특정 함수 실행
+const useClick = (onClick) => {
+  const element = useRef();
+  useEffect(() => {
+    const HTMLHandler = element.current;
+    if (HTMLHandler) {
+      HTMLHandler.addEventListener("click", onClick);
+    }
+    return () => {
+      HTMLHandler.removeEventListener("click", onClick);
+    };
+  }, [onClick]);
+  return element;
+};
+
+const Hook8 = () => {
+  const sayHello = () => console.log("helllo");
+  const title = useClick(sayHello);
+  return (
+    <div>
+      <h2 ref={title}>TITLE</h2>
+    </div>
+  );
+};
+```
 
 # 2.4 useBeforeLeave
 
