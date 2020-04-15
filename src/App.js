@@ -14,15 +14,33 @@ function App() {
           <Hook3 />
           <Hook4 />
         </Section>
-        <Section title={"USE EFFECT"}>
+        <Section title={"👍 USE EFFECT Section"}></Section>
+        <Section title={"USE EFFECT Hook5"}>
           <Hook5 />
+        </Section>
+        <Section title={"USE EFFECT Hook6"}>
           <Hook6 />
+        </Section>
+        <Section title={"USE EFFECT Hook7"}>
           <Hook7 />
+        </Section>
+        <Section title={"USE EFFECT Hook 8"}>
           <Hook8 />
+        </Section>
+        <Section title={"USE EFFECT Hook 9"}>
           <Hook9 />
+        </Section>
+        <Section title={"USE EFFECT Hook 10"}>
           <Hook10 />
+        </Section>
+        <Section title={"USE EFFECT Hook 11"}>
           <Hook11 />
+        </Section>
+        <Section title={"USE EFFECT Hook 12"}>
           <Hook12 />
+        </Section>
+        <Section title={"USE EFFECT Hook 13"}>
+          <Hook13 />
         </Section>
       </header>
     </div>
@@ -193,7 +211,7 @@ const useClick = (onClick) => {
 };
 
 const Hook8 = () => {
-  const sayHello = () => console.log("helllo");
+  const sayHello = (e) => console.log(e);
   const title = useClick(sayHello);
   return (
     <div>
@@ -299,6 +317,33 @@ const Hook12 = () => {
   );
 };
 
-const useNetwork = (onChange) => {
+//=====================================================================================================
+
+//현재의 온프 상태 / 이벤트 바인딩
+const useNetwork = (onNetworkChange) => {
   const [status, setStatus] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleChange = () => {
+      setStatus(navigator.onLine);
+      if (typeof onNetworkChange === "function") {
+        onNetworkChange(navigator.onLine);
+      }
+    };
+    window.addEventListener("online", handleChange);
+    window.addEventListener("offline", handleChange);
+    return () => {
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
+    };
+  }, [onNetworkChange]);
+
+  return status;
+};
+
+const Hook13 = () => {
+  const onNetworkChange = (status) =>
+    console.log(status ? "ON LINE " : "OFF LINE");
+  const onLine = useNetwork(onNetworkChange);
+  return <>{onLine ? "ON LINE" : "OFF LINE"}</>;
 };
