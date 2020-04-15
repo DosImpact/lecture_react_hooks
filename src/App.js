@@ -48,6 +48,9 @@ function App() {
         <Section title={"USE EFFECT Hook 15 - useFullscreen"}>
           <Hook15 />
         </Section>
+        <Section title={"USE EFFECT Hook 16"}>
+          <Hook16 />
+        </Section>
       </header>
     </div>
   );
@@ -164,7 +167,7 @@ const Hook5 = () => {
   const plus = () => setCnt(cnt + 1);
   const minus = () => setCnt(cnt - 1);
   useEffect(() => {
-    console.log("cnt Changed");
+    //console.log("cnt Changed");
   }, [cnt]);
   return (
     <>
@@ -380,18 +383,23 @@ const Hook14 = () => {
 
 //=====================================================================================================
 
+// - 풀스크린을 했다가 풀면, 원래 스크린으로 돌아왔을때, scroll y 문제가 있다.
 // 콜백 함수 / 리턴 : ref,triggerfull,exitfull
 const useFullScreen = (callback) => {
   const element = useRef();
   const triggerFullscreen = () => {
     if (element.current) {
-      element.current.requestFullscreen();
-      callback(true);
+      if (element.current.requestFullscreen) {
+        element.current.requestFullscreen();
+        callback(true);
+      }
     }
   };
   const triggerexit = () => {
     document.exitFullscreen();
-    callback(true);
+    if (document.exitFullscreen) {
+      callback(false);
+    }
   };
 
   return { element, triggerFullscreen, triggerexit };
@@ -399,7 +407,7 @@ const useFullScreen = (callback) => {
 
 const Hook15 = () => {
   const { element, triggerFullscreen, triggerexit } = useFullScreen((t) =>
-    console.log(t ? "Full Screen Now" : "Non Full Screen")
+    console.log(t ? "Full Screen Now" : "Non Full ")
   );
   return (
     <>
@@ -408,6 +416,41 @@ const Hook15 = () => {
         <button onClick={triggerFullscreen}>Full</button>
         <button onClick={triggerexit}>Exist</button>
       </div>
+    </>
+  );
+};
+//=====================================================================================================
+
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    console.log("This browser does not support desktop notification");
+  }
+  const [poss, setPoss] = useState(true);
+  const permissionNoti = async () => {
+    const res = await Notification.requestPermission();
+    console.log(res);
+    if (res === "granted") {
+      setPoss(true);
+    } else {
+      setPoss(false);
+    }
+  };
+  const triggerNoti = () => {
+    console.log("tiggerNoti");
+    if (poss) {
+      new Notification(title, options);
+    }
+  };
+  permissionNoti();
+  return triggerNoti;
+};
+
+const Hook16 = () => {
+  const triggerNoti = useNotification("you kimchi", { body: "me too" });
+  return (
+    <>
+      <div>UseNotification</div>
+      <button onClick={triggerNoti}>NOTI</button>
     </>
   );
 };
