@@ -318,11 +318,37 @@ const Hook12 = () => {
 
 # 2.6 useScroll & useFullscreen
 
+```js
+// 단순하게 현재의 스크롤 위치를 반환해 준다.
+const useScroll = () => {
+  const [state, setState] = useState({
+    x: 0,
+    y: 0,
+  });
+  const onScroll = () => {
+    setState({ y: window.scrollY, x: window.scrollX });
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return state;
+};
+
+const Hook14 = () => {
+  const position = useScroll();
+  return <>{JSON.stringify(position)}</>;
+};
+```
+
 # 2.7 useNotification
 
 # 2.8 useAxios
 
 # 2.9 Conclusions
+
+[https://reactjs.org/docs/hooks-faq.html#how-can-i-do-data-fetching-with-hooks](https://reactjs.org/docs/hooks-faq.html#how-can-i-do-data-fetching-with-hooks)
 
 - 훅 규칙 볼것!!
 
@@ -403,5 +429,7 @@ const useAxios = (opts, axiosInstance = defaultAxios) => {
 ```
 
 # 2.10 Publishing to NPM
+
+- try React Helmet component like ~~
 
 # 2.11 What to Learn Next
