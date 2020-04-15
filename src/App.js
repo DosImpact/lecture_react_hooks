@@ -42,6 +42,12 @@ function App() {
         <Section title={"USE EFFECT Hook 13"}>
           <Hook13 />
         </Section>
+        <Section title={"USE EFFECT Hook 14 - Scroll"}>
+          <Hook14 />
+        </Section>
+        <Section title={"USE EFFECT Hook 15 - useFullscreen"}>
+          <Hook15 />
+        </Section>
       </header>
     </div>
   );
@@ -346,4 +352,62 @@ const Hook13 = () => {
     console.log(status ? "ON LINE " : "OFF LINE");
   const onLine = useNetwork(onNetworkChange);
   return <>{onLine ? "ON LINE" : "OFF LINE"}</>;
+};
+
+//=====================================================================================================
+
+// 단순하게 현재의 스크롤 위치를 반환해 준다.
+const useScroll = () => {
+  const [state, setState] = useState({
+    x: 0,
+    y: 0,
+  });
+  const onScroll = () => {
+    setState({ y: window.scrollY, x: window.scrollX });
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return state;
+};
+
+const Hook14 = () => {
+  const position = useScroll();
+  return <>{JSON.stringify(position)}</>;
+};
+
+//=====================================================================================================
+
+// 콜백 함수 / 리턴 : ref,triggerfull,exitfull
+const useFullScreen = (callback) => {
+  const element = useRef();
+  const triggerFullscreen = () => {
+    if (element.current) {
+      element.current.requestFullscreen();
+      callback(true);
+    }
+  };
+  const triggerexit = () => {
+    document.exitFullscreen();
+    callback(true);
+  };
+
+  return { element, triggerFullscreen, triggerexit };
+};
+
+const Hook15 = () => {
+  const { element, triggerFullscreen, triggerexit } = useFullScreen((t) =>
+    console.log(t ? "Full Screen Now" : "Non Full Screen")
+  );
+  return (
+    <>
+      <div ref={element}>
+        <img src="https://smaller-pictures.appspot.com/images/dreamstime_xxl_65780868_small.jpg"></img>
+        <button onClick={triggerFullscreen}>Full</button>
+        <button onClick={triggerexit}>Exist</button>
+      </div>
+    </>
+  );
 };
