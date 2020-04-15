@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import defaultAxios from "axios";
 
 function App() {
   return (
@@ -50,6 +51,9 @@ function App() {
         </Section>
         <Section title={"USE EFFECT Hook 16"}>
           <Hook16 />
+        </Section>
+        <Section title={"USE EFFECT Hook 17"}>
+          <Hook17 />
         </Section>
       </header>
     </div>
@@ -412,7 +416,10 @@ const Hook15 = () => {
   return (
     <>
       <div ref={element}>
-        <img src="https://smaller-pictures.appspot.com/images/dreamstime_xxl_65780868_small.jpg"></img>
+        <img
+          alt="sample"
+          src="https://smaller-pictures.appspot.com/images/dreamstime_xxl_65780868_small.jpg"
+        ></img>
         <button onClick={triggerFullscreen}>Full</button>
         <button onClick={triggerexit}>Exist</button>
       </div>
@@ -451,6 +458,69 @@ const Hook16 = () => {
     <>
       <div>UseNotification</div>
       <button onClick={triggerNoti}>NOTI</button>
+    </>
+  );
+};
+//=====================================================================================================
+
+// 인풋  axios인스턴스  > 결과 , 로딩,애러,데이터,리패치
+const useAxios = (opts, axiosInstance = defaultAxios) => {
+  const [state, setState] = useState({
+    loading: true,
+    erorr: false,
+    data: null,
+  });
+  const [trigger, setTrigger] = useState(false);
+
+  const triggerRefectch = () => {
+    setTrigger(!trigger);
+    setState({ ...state, loading: true });
+  };
+
+  useEffect(async () => {
+    // try {
+    //   const { data } = await axiosInstance(opts);
+    //   console.log("useEFFECT try : ");
+    //   console.log(state);
+    //   console.log(data);
+    //   setState({ ...state, data });
+    // } catch (error) {
+    //   setState({ error: true });
+    // } finally {
+    //   //setState({ loading: false });
+    //   console.log("useEFFECT finally : ");
+    //   console.log(state);
+    // }
+    axiosInstance(opts)
+      .then((data) => {
+        setState({
+          ...state,
+          loading: false,
+          data,
+        });
+      })
+      .catch((error) => {
+        setState({ ...state, loading: false, error });
+      });
+  }, []);
+
+  return { ...state, triggerRefectch };
+};
+
+const Hook17 = () => {
+  const { data, loading } = useAxios({
+    url: "https://randomuser.me/api",
+  });
+  console.log("main : data:");
+  console.log(data);
+  return (
+    <>
+      <div> useAxios</div>
+      <div>
+        {loading && "Loading..."}
+        {!loading && "loading Ended!"}
+        {data && JSON.stringify(data)}
+      </div>
     </>
   );
 };

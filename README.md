@@ -324,6 +324,84 @@ const Hook12 = () => {
 
 # 2.9 Conclusions
 
+- 훅 규칙 볼것!!
+
+## useEffect에서 여러번 setState를 하면 발생하는 문제
+
+- useEffect의 랜더링 사이클 이해 아직 X
+- try 에서 data를 가져오고, setState로 data를 저장하는 순간, useEffect 구문에서 비동기적으로 랜더링이 됨 ( data가 잘 들어옴 )
+- finally 에서 loading을 false로 바꾸는 순간, 원래 data가 없던 초기상태의 state에 loading만 false로 랜더링이 한번 더 되는듯.
+
+- 문제의 코드
+
+```js
+const useAxios = (opts, axiosInstance = defaultAxios) => {
+  const [state, setState] = useState({
+    loading: true,
+    erorr: false,
+    data: null,
+  });
+  const [trigger, setTrigger] = useState(false);
+
+  const triggerRefectch = () => {
+    setTrigger(!trigger);
+    setState({ ...state, loading: true });
+  };
+
+  useEffect(async () => {
+    try {
+      const { data } = await axiosInstance(opts);
+      console.log("useEFFECT try : ");
+      console.log(state);
+      console.log(data);
+      setState({ ...state, data });
+    } catch (error) {
+      setState({ error: true });
+    } finally {
+      //setState({ loading: false });
+      console.log("useEFFECT finally : ");
+      console.log(state);
+    }
+  }, []);
+
+  return { ...state, triggerRefectch };
+};
+```
+
+- 니코쌤 코드
+
+```js
+const useAxios = (opts, axiosInstance = defaultAxios) => {
+  const [state, setState] = useState({
+    loading: true,
+    erorr: false,
+    data: null,
+  });
+  const [trigger, setTrigger] = useState(false);
+
+  const triggerRefectch = () => {
+    setTrigger(!trigger);
+    setState({ ...state, loading: true });
+  };
+
+  useEffect(async () => {
+    axiosInstance(opts)
+      .then((data) => {
+        setState({
+          ...state,
+          loading: false,
+          data,
+        });
+      })
+      .catch((error) => {
+        setState({ ...state, loading: false, error });
+      });
+  }, []);
+
+  return { ...state, triggerRefectch };
+};
+```
+
 # 2.10 Publishing to NPM
 
 # 2.11 What to Learn Next
