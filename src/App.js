@@ -22,6 +22,7 @@ function App() {
           <Hook9 />
           <Hook10 />
           <Hook11 />
+          <Hook12 />
         </Section>
       </header>
     </div>
@@ -275,4 +276,29 @@ const Hook11 = () => {
   const beggingYou = () => console.log("please dont leave me..");
   useBeforeLeave(beggingYou);
   return <div>BEGGING</div>;
+};
+
+const useFadeIn = () => {
+  const element = useRef();
+  useEffect(() => {
+    if (element.current) {
+      const { current } = element;
+      current.style.transition = `opacity 3s`;
+      current.style.opacity = 1;
+    }
+  }, []);
+  return { ref: element, style: { opacity: 0 } };
+};
+
+const Hook12 = () => {
+  const titleFadein = useFadeIn();
+  return (
+    <>
+      <h2 {...titleFadein}>DOS-IMPACT</h2>
+    </>
+  );
+};
+
+const useNetwork = (onChange) => {
+  const [status, setStatus] = useState(navigator.onLine);
 };

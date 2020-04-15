@@ -291,6 +291,31 @@ const Hook11 = () => {
 
 # 2.5 useFadeIn & useNetwork
 
+- useFadeIn
+
+```js
+const useFadeIn = () => {
+  const element = useRef();
+  useEffect(() => {
+    if (element.current) {
+      const { current } = element;
+      current.style.transition = `opacity 3s`;
+      current.style.opacity = 1;
+    }
+  }, []);
+  return { ref: element, style: { opacity: 0 } };
+};
+
+const Hook12 = () => {
+  const titleFadein = useFadeIn();
+  return (
+    <>
+      <h2 {...titleFadein}>DOS-IMPACT</h2>
+    </>
+  );
+};
+```
+
 # 2.6 useScroll & useFullscreen
 
 # 2.7 useNotification
