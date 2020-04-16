@@ -1,13 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import defaultAxios from "axios";
+import UserContextProvider, {
+  UserContext,
+  useUser,
+  useUserFns,
+} from "./context";
 
 function App() {
+  const [idx, setIdx] = useState(0);
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        <button onClick={() => window.scrollTo(0, 50000)}>GODOWN</button>
         <h1>DOS 🛠 HOOKS</h1>
         <Section title={"USE STATE"}>
           <Hook1 />
@@ -55,6 +63,9 @@ function App() {
         <Section title={"USE EFFECT Hook 17"}>
           <Hook17 />
         </Section>
+        <Section title={"USE Context Hook 18"}>
+          <Hook18 />
+        </Section>
       </header>
     </div>
   );
@@ -65,7 +76,7 @@ export default App;
 const useInput = (initialState) => {
   const [value, setValue] = useState(initialState);
   const onChange = (e) => {
-    console.log(e.target.value);
+    //console.log(e.target.value);
     setValue(e.target.value);
   };
   return { value, onChange };
@@ -75,7 +86,7 @@ const useInputVaild = (initialState, vaildator) => {
   const [value, setValue] = useState(initialState);
   const onChange = (e) => {
     let willupdate = true;
-    console.log(e.target.value);
+    //console.log(e.target.value);
     if (typeof vaildator === "function") {
       willupdate = vaildator(e.target.value);
     }
@@ -200,7 +211,7 @@ const Hook6 = () => {
 
 const Hook7 = () => {
   const nameInputRef = useRef();
-  setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 1000);
+  //setTimeout(() => nameInputRef.current && nameInputRef.current.focus(), 1000);
   return (
     <div>
       <input ref={nameInputRef} placeholder="name"></input>
@@ -435,7 +446,7 @@ const useNotification = (title, options) => {
   const [poss, setPoss] = useState(true);
   const permissionNoti = async () => {
     const res = await Notification.requestPermission();
-    console.log(res);
+    //console.log(res);
     if (res === "granted") {
       setPoss(true);
     } else {
@@ -443,7 +454,7 @@ const useNotification = (title, options) => {
     }
   };
   const triggerNoti = () => {
-    console.log("tiggerNoti");
+    //console.log("tiggerNoti");
     if (poss) {
       new Notification(title, options);
     }
@@ -511,8 +522,8 @@ const Hook17 = () => {
   const { data, loading } = useAxios({
     url: "https://randomuser.me/api",
   });
-  console.log("main : data:");
-  console.log(data);
+  // console.log("main : data:");
+  // console.log(data);
   return (
     <>
       <div> useAxios</div>
@@ -524,3 +535,36 @@ const Hook17 = () => {
     </>
   );
 };
+//=====================================================================================================
+
+const Hook18 = () => {
+  return (
+    <UserContextProvider>
+      <Screen />
+    </UserContextProvider>
+  );
+};
+
+const Screen = () => {
+  return <Header />;
+};
+
+const Header = () => {
+  // const { user, logUserIn, logUserOut } = useContext(UserContext);
+  const userData = useUser();
+  const userFns = useUserFns();
+  return (
+    <>
+      {/* <div>Hello {user.name}</div>
+      <button onClick={logUserIn}>Login</button>
+      <button onClick={logUserOut}>LogOut</button>
+      <div>You are in {user.loggedIn ? "Log in " : "Log Out"}</div> */}
+
+      <div>Hello {userData.name}</div>
+      <button onClick={userFns.logUserIn}>Login</button>
+      <button onClick={userFns.logUserOut}>LogOut</button>
+      <div>You are in {userData.loggedIn ? "Log in " : "Log Out"}</div>
+    </>
+  );
+};
+//=====================================================================================================

@@ -433,3 +433,789 @@ const useAxios = (opts, axiosInstance = defaultAxios) => {
 - try React Helmet component like ~~
 
 # 2.11 What to Learn Next
+
+# ------------------------------------------------------------------------------------------
+
+# 9.1 Context and State Management (8:59)
+
+- 유저의 프로필,이메일 정보가 필요해, 메인화면,상세화면 등 > 매번 API을 호출할수는 없다.
+- 엄청큰 컴포넌트(모두를 감싸는)를 만들고, 하위 라우팅을 만든다. 정보를 가져오기만 하면 상관없다.
+- 하지만, 정보를 수정한다면, 문제가 발생한다. 상위 컴포넌트는 점점커지고, Redux의 필요성이 생긴다.
+
+- 만약, 컴포넌트가 많아진다고 생각해봐라. 헤더에 유저의 정보가 있다면 >
+- 데이터 가져오는 컴포넌트 > 헤더 컴포넌트 > 유저 정보 컴포넌트 ... : 등의 순서로 온다면
+- 유저 정보 컴포넌트로 props를 보내기위해 다른 컴포넌트가 쓰지도 않을 데이터를 가지고 있는건 낭비다.
+
+- 데이터 하우스를 하나 만들어서, 유저 이메일, 유저 프로필을 저장해놔
+- 특정 컴포넌트가 해당 데이터가 필요할떄마다 가져오면 해결되지.
+- 이런 저장소는 리덕스,몸엑스,UseContext 가 될 수 있다. ( 여러가지 방법이 있어.)
+
+- UseContext는 보다 심플한 상태관리에서 파워풀 하고
+- Redux는 좀 더 커다란 Statesㄹ와 많은 변화들이 있을때 적합하다고 본다.
+
+# 9.2 useContext in Action (12:33)
+
+```js
+import React, { useState } from "react";
+
+//여러군대에서 사용예정
+//const { user, logUserIn, logUserOut } = useContext(UserContext); 이렇게
+export const UserContext = React.createContext();
+
+const UserContextProvider = ({ children }) => {
+  const [user, setUser] = useState({ name: "Dosimpact", loggedIn: false });
+  const logUserIn = () => setUser({ ...user, loggedIn: true });
+  const logUserOut = () => setUser({ ...user, loggedIn: false });
+  return (
+    <UserContext.Provider value={{ user, logUserIn, logUserOut }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+//한번만 상위 컴포넌트에서 선언 될 예정
+export default UserContextProvider;
+```
+
+```js
+const Hook18 = () => {
+  return (
+    <UserContextProvider>
+      <Screen />
+    </UserContextProvider>
+  );
+};
+
+const Screen = () => {
+  return <Header />;
+};
+
+const Header = () => {
+  const { user, logUserIn, logUserOut } = useContext(UserContext);
+  return (
+    <>
+      <div>Hello {user.name}</div>
+      <button onClick={logUserIn}>Login</button>
+      <button onClick={logUserOut}>LogOut</button>
+      <div>You are in {user.loggedIn ? "Log in " : "Log Out"}</div>
+    </>
+  );
+};
+```
+
+# 9.3 Recap and Improvements (7:06)
+
+```js
+import React, { useState, useContext } from "react";
+
+//여러군대에서 사용예정
+//const { user, logUserIn, logUserOut } = useContext(UserContext); 이렇게
+export const UserContext = React.createContext();
+
+const UserContextProvider = ({ children }) => {
+  const [user, setUser] = useState({ name: "Dosimpact", loggedIn: false });
+  const logUserIn = () => setUser({ ...user, loggedIn: true });
+  const logUserOut = () => setUser({ ...user, loggedIn: false });
+  return (
+    <UserContext.Provider value={{ user, Fns: { logUserIn, logUserOut } }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+export const useUser = () => {
+  const { user } = useContext(UserContext);
+  return user;
+};
+
+export const useUserFns = () => {
+  const { Fns } = useContext(UserContext);
+  return Fns;
+};
+
+//한번만 상위 컴포넌트에서 선언 될 예정
+export default UserContextProvider;
+```
+
+```js
+import UserContextProvider, {
+  UserContext,
+  useUser,
+  useUserFns,
+} from "./context";
+
+const Hook18 = () => {
+  return (
+    <UserContextProvider>
+      <Screen />
+    </UserContextProvider>
+  );
+};
+
+const Screen = () => {
+  return <Header />;
+};
+
+const Header = () => {
+  // const { user, logUserIn, logUserOut } = useContext(UserContext);
+  const userData = useUser();
+  const userFns = useUserFns();
+  return (
+    <>
+      <div>Hello {userData.name}</div>
+      <button onClick={userFns.logUserIn}>Login</button>
+      <button onClick={userFns.logUserOut}>LogOut</button>
+      <div>You are in {userData.loggedIn ? "Log in " : "Log Out"}</div>
+    </>
+  );
+};
+```
+
+# 9.4 Building Hypertranslate part One (10:13)
+
+# 9.5 Building Hypertranslate part Two (5:40)
+
+# 9.6 Understanding useReducer (8:55)
+
+# 9.7 Reducer Recap (6:59)
+
+# 9.8 Adding To Dos (8:27)
+
+# 9.9 Deleting To Dos (7:37)
+
+# 9.10 Completing To Dos (9:23)
+
+# 9.11 Uncompleting To Dos (4:33)
+
+# 9.12 Refactoring with Context (9:28)
+
+# 9.13 Refactoring with Context part Two (10:35)
+
+# 9.14 Conclusions (1:28)
+
+# 리액트 훅 챌린지 - GeoLocation
+
+- 문제 순수 JS 로직으로만 간다면 리랜더링이 없다. ( 실제론 위치정보 잘 받아왔지만, 화면에 그리질 못함.)
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  let state = { coords: { lat: null, long: null }, error: null };
+  const succ = (pos) => {
+    const { latitude: lat, longitude: long } = pos.coords;
+    console.log(pos.coords);
+    state = { ...state, coords: { lat, long } };
+  };
+  const error = (err) => {
+    state = { ...state, error: true };
+  };
+  navigator.geolocation.getCurrentPosition(succ, error);
+  return state;
+};
+```
+
+- 일딴 state를 통해, 만들었다. DOM 이 바뀐부분만 랜더링 한다 했으니, 현재 위치가 고정된 이상, 무한 랜더링이 될까? ( 실제 > 무한 랜더링 중 ...)
+
+```js
+import { useState } from "react";
+
+export default () => {
+  //const [updated, setUpdated] = useState(false);
+  const [state, setState] = useState({
+    coords: { lat: null, long: null },
+    error: null,
+  });
+
+  const succ = (pos) => {
+    const { latitude: lat, longitude: long } = pos.coords;
+    setState({ ...state, coords: { lat, long } });
+  };
+  const error = (err) => {
+    setState({ ...state, error: true });
+  };
+  const fetchData = () => {
+    navigator.geolocation.getCurrentPosition(succ, error);
+  };
+  fetchData();
+  return state;
+};
+```
+
+- useEffect를 사용해서, 무한 랜더링은 막았지만, Effect 한테 거짓말을 했음.
+- fetchDtat함수는 매 랜더링 마다 바뀌는데, 안바뀐다고 얘기함.
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  //const [updated, setUpdated] = useState(false);
+  const [state, setState] = useState({
+    coords: { lat: null, long: null },
+    error: null,
+  });
+
+  const succ = (pos) => {
+    const { latitude: lat, longitude: long } = pos.coords;
+    setState({ ...state, coords: { lat, long } });
+  };
+  const error = (err) => {
+    setState({ ...state, error: true });
+  };
+  const fetchData = () => {
+    navigator.geolocation.getCurrentPosition(succ, error);
+  };
+  //fetchData();
+  useEffect(() => {
+    fetchData();
+  }, []);
+  return state;
+};
+```
+
+- 의존성 완전 제거
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  const [state, setState] = useState({
+    coords: { lat: null, long: null },
+    error: null,
+  });
+
+  useEffect(() => {
+    const succ = (pos) => {
+      const { latitude: lat, longitude: long } = pos.coords;
+      setState((pre) => ({ ...pre, coords: { lat, long } }));
+    };
+    const error = (err) => {
+      setState((pre) => ({ ...pre, error: true }));
+    };
+    navigator.geolocation.getCurrentPosition(succ, error);
+  }, []);
+  return state;
+};
+```
+
+- 카운터
+
+```js
+//마법의 useEffect가 안끝나는 현상...
+const Counter = () => {
+  const [cnt, setCnt] = useState(0);
+  useEffect(() => {
+    console.log("Effect is running");
+    const id = setInterval(() => {
+      setCnt((c) => {
+        console.log("COUTER UPDATE", c);
+        return c + 1;
+      });
+    }, 1000);
+    return () => {
+      console.log("EFFECT IS CLEARED");
+      clearInterval(id);
+    };
+  }, []);
+  return <>{cnt}</>;
+};
+
+const Couter02 = () => {
+  const [cnt, setCnt] = useState(0);
+  useEffect(() => {
+    console.log("Effect is running");
+    const id = setInterval(() => {
+      console.log("COUTER UPDATE", cnt);
+      setCnt(cnt + 1);
+    }, 1000);
+    return () => {
+      console.log("EFFECT IS CLEARED");
+      clearInterval(id);
+    };
+  }, [cnt]);
+
+  return <>{cnt}</>;
+};
+
+const Couter03 = () => {
+  const [cnt, setCnt] = useState(0);
+  const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    console.log("use Effect start");
+    const id = setInterval(() => {
+      setCnt((c) => {
+        console.log("COUTER UPDATE", c);
+        return c + step;
+      });
+    }, 1000);
+    return () => {
+      clearInterval(id);
+      console.log("use Effect cleanUp");
+    };
+  }, [step]);
+
+  return (
+    <>
+      <div>{cnt}</div>
+      <input value={step} onChange={(e) => setStep(Number(e.target.value))} />
+    </>
+  );
+};
+```
+
+- 이렇게 만들었더니, map 안의 모든 컴포넌트를 재 랜더링 하더라.
+
+```js
+function App() {
+  const titles = [
+    { title: "useDeviceOrientation", JSXElemnet: Hook01 },
+    { title: "useFavicon", JSXElemnet: Hook02 },
+    { title: "useGeolocation", JSXElemnet: Hook03 },
+    { title: "useKeyPress", JSXElemnet: Hook04 },
+    { title: "useLocalStorage", JSXElemnet: Hook05 },
+    { title: "useMousePosition", JSXElemnet: Hook06 },
+    { title: "useOnline", JSXElemnet: Hook07 },
+  ];
+  return (
+    <div className="App">
+      <h1>Super Hooks !</h1>
+      {titles.map((e, i) => (
+        <Section title={e.title}>{e.JSXElemnet()}</Section>
+      ))}
+    </div>
+  );
+}
+```
+
+- useEffect 랑 바닐라변수를 쓴다면??? , 변수를 전혀 바꿀 수 없다.
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  let pos = { x: 0, y: 0 };
+  const [state, setState] = useState({ x: 0, y: 0 });
+  const [lock, setLock] = useState(false);
+
+  const lockScroll = () => {
+    console.log("lock");
+    setLock(true);
+  };
+  const unlockScroll = () => {
+    setLock(false);
+  };
+
+  useEffect(() => {
+    const handleChange = (e) => {
+      if (lock) {
+        console.log(`is Lock ${lock}`);
+        window.scrollTo(pos.x, pos.y);
+      } else {
+        pos = { x: window.scrollX, y: window.scrollY };
+        console.log(`scrolled ${pos.x} ,${pos.y}`);
+      }
+    };
+    window.addEventListener("scroll", handleChange);
+    return () => {
+      window.removeEventListener("scroll", handleChange);
+    };
+  }, [lock]);
+
+  return [lock, { lockScroll, unlockScroll }];
+};
+```
+
+# 리액트 훅 챌린지 정리
+
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+
+import "./styles.css";
+
+import {
+  useDeviceOrientation,
+  useFavicon,
+  useGeolocation,
+  useKeyPress,
+  useLocalStorage,
+  useMousePosition,
+  useOnline,
+  useLockScroll,
+} from "./hooks";
+
+const Section = ({ title, children }) => {
+  return (
+    <>
+      <div>{title}</div>
+      {children}
+    </>
+  );
+};
+
+function App() {
+  // const titles = [
+  //   { title: "useDeviceOrientation", JSXElemnet: Hook01 },
+  //   { title: "useFavicon", JSXElemnet: Hook02 },
+  //   { title: "useGeolocation", JSXElemnet: Hook03 },
+  //   { title: "useKeyPress", JSXElemnet: Hook04 },
+  //   { title: "useLocalStorage", JSXElemnet: Hook05 },
+  //   { title: "useMousePosition", JSXElemnet: Hook06 },
+  //   { title: "useOnline", JSXElemnet: Hook },
+  // ];
+  return (
+    <div className="App">
+      {/* <h1>Super Hooks !</h1>
+      {titles.map((e, i) => (
+        <Section title={e.title}>{e.JSXElemnet()}</Section>
+      ))} */}
+
+      <Section title={"useDeviceOrientation"}>
+        <Hook01 />
+      </Section>
+      <Section title={"useFavicon"}>{Hook02()}</Section>
+      <Section title={"useGeolocation"}>
+        <Hook03 />
+      </Section>
+      <Section title={"useKeyPress"}>
+        <Hook04 />
+      </Section>
+      <Section title={"useKeyPress"}>
+        <Hook05 />
+      </Section>
+      <Section title={"useMousePosition"}>
+        <Hook06 />
+      </Section>
+      <Section title={"useOnline"}>
+        <Hook07 />
+      </Section>
+      <Section title={"useLockScroll"}>
+        <Hook08 />
+      </Section>
+    </div>
+  );
+}
+
+const Hook01 = () => {
+  const { alpha, beta, gamma } = useDeviceOrientation();
+  return (
+    <ul>
+      <li>alpha: {alpha}</li>
+      <li>beta: {beta}</li>
+      <li>gamma: {gamma}</li>
+    </ul>
+  );
+};
+
+const Hook02 = () => {
+  const setFavicon = useFavicon("https://www.google.com/favicon.ico");
+
+  return (
+    <>
+      <button onClick={() => setFavicon("https://facebook.com/favicon.ico")}>
+        change favicon
+      </button>
+    </>
+  );
+};
+
+const Hook03 = () => {
+  const {
+    coords: { lat, long },
+    error,
+  } = useGeolocation();
+  // console.log(lat, long);
+  return (
+    <ul>
+      <li>Latitude: {lat}</li>
+      <li>Longitude: {long}</li>
+      <li>GeoLocation error: {error === null ? "null" : "error"}</li>
+    </ul>
+  );
+};
+
+const Hook04 = () => {
+  const kPressed = useKeyPress("k");
+  const iPressed = useKeyPress("i");
+  const mPressed = useKeyPress("m");
+  const cPressed = useKeyPress("c");
+  const hPressed = useKeyPress("h");
+  return (
+    <ul>
+      <li>kPressed: {kPressed && "k"}</li>
+      <li>iPressed: {iPressed && "i"}</li>
+      <li>mPressed: {mPressed && "m"}</li>
+      <li>cPressed: {cPressed && "c"}</li>
+      <li>hPressed: {hPressed && "h"}</li>
+      <li>iPressed: {iPressed && "i"}</li>
+    </ul>
+  );
+};
+
+const Hook05 = () => {
+  const [currentLS, setLS] = useLocalStorage("JWT", "1234");
+
+  return (
+    <>
+      <ul>
+        <li>
+          <div>Current Value: {currentLS}</div>
+          <div>
+            <button onClick={() => setLS("1234")}>Set value: 1234</button>
+            <button onClick={() => setLS(null)}>Clear LS</button>
+          </div>
+        </li>
+      </ul>
+    </>
+  );
+};
+
+const Hook06 = () => {
+  const { x, y } = useMousePosition();
+  return (
+    <>
+      <ul>
+        <li>Mouse X: {x}</li>
+        <li>Mouse Y: {y}</li>
+      </ul>
+    </>
+  );
+};
+
+const Hook07 = () => {
+  const isOnline = useOnline();
+  return (
+    <>
+      <div>Are we online ? {isOnline ? "YES" : "NO"}</div>
+    </>
+  );
+};
+const Hook08 = () => {
+  const [isLocked, { lockScroll, unlockScroll }] = useLockScroll();
+  return (
+    <>
+      <div>is Locked ? {isLocked ? "YES" : "NO"}</div>
+      <button onClick={() => lockScroll()}>lockScroll</button>
+      <button onClick={() => unlockScroll()}>unlockScroll</button>
+    </>
+  );
+};
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+```
+
+```js
+export { default as useDeviceOrientation } from "./useDeviceOrientation";
+export { default as useFavicon } from "./useFavicon";
+export { default as useGeolocation } from "./useGeolocation";
+export { default as useKeyPress } from "./useKeyPress";
+export { default as useLocalStorage } from "./useLocalStorage";
+export { default as useMousePosition } from "./useMousePosition";
+export { default as useOnline } from "./useOnline";
+export { default as useLockScroll } from "./useLockScroll";
+```
+
+- useDeviceOrientation
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  const [state, setState] = useState({ alpha: null, beta: null, gamma: null });
+
+  useEffect(() => {
+    const handleOri = (e) => {
+      setState({
+        alpha: e.alpha,
+        beta: e.beta,
+        gamma: e.gamma,
+      });
+    };
+    window.addEventListener("deviceorientation", handleOri, true);
+    return () => {
+      window.removeEventListener("deviceorientation", handleOri, true);
+    };
+  }, []);
+
+  return { ...state };
+};
+```
+
+- useFavicon
+
+```js
+export default (url) => {
+  const setFavicon = (url) => {
+    const El = document.querySelector("link#favicon");
+    if (El && El.href) {
+      El.href = url;
+    }
+  };
+  setFavicon(url);
+  return setFavicon;
+};
+```
+
+- useGeolocation
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  const [state, setState] = useState({
+    coords: { lat: null, long: null },
+    error: null,
+  });
+
+  useEffect(() => {
+    const succ = (pos) => {
+      const { latitude: lat, longitude: long } = pos.coords;
+      setState((pre) => ({ ...pre, coords: { lat, long } }));
+    };
+    const error = (err) => {
+      setState((pre) => ({ ...pre, error: true }));
+    };
+    navigator.geolocation.getCurrentPosition(succ, error);
+  }, []);
+  return state;
+};
+```
+
+- useKeyPress
+
+```js
+import { useState, useEffect } from "react";
+
+export default (i) => {
+  const [key, setKey] = useState(false);
+  useEffect(() => {
+    const keyDownHandler = (e) => {
+      const keyName = e.key;
+      if (keyName === i) {
+        setKey(() => true);
+      }
+    };
+    const keyUpHandler = (e) => {
+      const keyName = e.key;
+      if (keyName === i) {
+        setKey(() => false);
+      }
+    };
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler, false);
+      document.removeEventListener("keyup", keyUpHandler, false);
+    };
+  }, [i]);
+  return key;
+};
+```
+
+- useLocalStorage
+
+```js
+import { useState } from "react";
+//key 이름과, 초기값을 지정해 준다.
+//반환으로 현재 key에 대응하는 value값을 주고, 변경할수 있는 함수 제공
+export default (key, initalValue) => {
+  const [value, setValue] = useState(initalValue);
+
+  const setLS = (nValue) => {
+    localStorage.setItem(key, nValue);
+    setValue(nValue);
+  };
+
+  return [value, setLS];
+};
+```
+
+- useMousePosition
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  const [state, setState] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const mouseMoveH = (e) => {
+      // console.log(`
+      // Screen X/Y: ${e.screenX}, ${e.screenY}
+      // Client X/Y: ${e.clientX}, ${e.clientY}`);
+      if (e.clientX && e.clientY) {
+        setState({ x: e.clientX, y: e.clientY });
+      }
+    };
+    document.addEventListener("mousemove", mouseMoveH);
+    return () => {
+      console.log("EFFECT CLEARED");
+      document.removeEventListener("mousemove", mouseMoveH);
+    };
+  }, []);
+
+  return state;
+};
+```
+
+- useOnline
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  const [state, setState] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleChange = () => {
+      setState(navigator.onLine);
+    };
+    window.addEventListener("online", handleChange);
+    window.addEventListener("offline", handleChange);
+    return () => {
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
+    };
+  }, []);
+
+  return state;
+};
+```
+
+- useLockScroll
+
+```js
+import { useState, useEffect } from "react";
+
+export default () => {
+  //let pos = { x: 0, y: 0 };
+  const [state, setState] = useState({ x: 0, y: 0 });
+  const [lock, setLock] = useState(false);
+
+  const lockScroll = () => {
+    console.log("lock");
+    setLock(true);
+  };
+  const unlockScroll = () => {
+    setLock(false);
+  };
+
+  useEffect(() => {
+    const handleChange = (e) => {
+      if (lock) {
+        window.scrollTo(state.x, state.y);
+      } else {
+        setState({ x: window.scrollX, y: window.scrollY });
+        //  console.log(`scrolled ${state.x} ,${state.y}`);
+      }
+    };
+    window.addEventListener("scroll", handleChange);
+    return () => {
+      window.removeEventListener("scroll", handleChange);
+    };
+  }, [lock]);
+
+  return [lock, { lockScroll, unlockScroll }];
+};
+```
