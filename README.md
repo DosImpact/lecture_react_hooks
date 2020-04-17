@@ -1057,6 +1057,28 @@ export default (url) => {
 };
 ```
 
+- useFavicon - nico
+
+```js
+import { useEffect } from "react";
+
+export function useFavicon(initialFavicon) {
+  const setFavicon = (href) => {
+    const link =
+      document.querySelector("link[rel*='icon']") ||
+      document.createElement("link");
+    link.rel = "shortcut icon";
+    link.href = href;
+    const [head] = document.getElementsByTagName("head");
+    head.appendChild(link);
+  };
+  useEffect(() => {
+    setFavicon(initialFavicon);
+  }, [initialFavicon]);
+  return setFavicon;
+}
+```
+
 - useGeolocation
 
 ```js
@@ -1129,6 +1151,33 @@ export default (key, initalValue) => {
 
   return [value, setLS];
 };
+```
+
+- useLocalStorage - nico
+
+```js
+import { useState } from "react";
+
+export function useLocalStorage(name, initialValue) {
+  const [currentValue, changeValue] = useState(() => {
+    try {
+      const item = localStorage.getItem(name);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (e) {
+      return initialValue;
+    }
+  });
+
+  const updateValue = (newValue) => {
+    try {
+      changeValue(newValue);
+      localStorage.setItem(name, JSON.stringify(newValue));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  return [currentValue, updateValue];
+}
 ```
 
 - useMousePosition
@@ -1218,4 +1267,24 @@ export default () => {
 
   return [lock, { lockScroll, unlockScroll }];
 };
+```
+
+- useLockScroll -nico
+
+```js
+import { useState } from "react";
+
+export function useLockScroll() {
+  const [initialScroll] = useState(document.body.style.overflow);
+  const [isLocked, setIsLocked] = useState(false);
+  const lockScroll = () => {
+    document.body.style.overflow = "hidden";
+    setIsLocked(true);
+  };
+  const unlockScroll = () => {
+    document.body.style.overflow = initialScroll;
+    setIsLocked(false);
+  };
+  return [isLocked, { lockScroll, unlockScroll }];
+}
 ```
